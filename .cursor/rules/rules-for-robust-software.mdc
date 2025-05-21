@@ -1,0 +1,37 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Three Rules for Bug-Free Code (from https://www.youtube.com/watch?v=z43bmaMwagI)
+
+## Rule 1: Concentrate Decisions in One Place
+
+Never repeat the same condition in multiple places in your codebase. When the same condition appears in different locations, it creates "wormholes" that lead to synchronization failures. Instead, encapsulate decisions at a single point—typically at object creation time using factory methods—and let the consequences flow from class design rather than conditional logic.
+
+## Rule 2: Replace Conditional Logic with Structure
+
+Prefer structural solutions over conditional statements whenever possible:
+
+- Use assertions to validate and abort invalid states rather than branching around them
+- Leverage value polymorphism (switch statements at function entry points) for value-dependent behavior
+- Employ object polymorphism (subclasses with specialized behavior) for complex conditional behavior
+- Make decisions once, then let the code's structure handle the consequences
+
+## Rule 3: Eliminate Null Checks Through Design
+
+Replace null references with null objects that implement the expected interface. This eliminates the need for defensive null checks spread throughout the code, which represent one of the most common forms of duplicated conditions. Move validation to object creation time rather than object usage time, converting runtime checks to compile-time guarantees wherever possible.
+
+# Three Rules for Software Simplicity (from https://www.youtube.com/watch?v=SxdOUGdseq4)
+
+## Rule 1: Avoid Entanglement at All Costs
+
+Keep components untangled and independent of each other. Entanglement limits understanding and creates complexity. When designs require components to reference each other or share state, you've created a system where changes become increasingly difficult. Complexity isn't about quantity—it's about interconnectedness.
+
+## Rule 2: Judge Constructs by Their Artifacts, Not Your Experience Using Them
+
+Evaluate code not by how easy it is to write or how familiar it feels, but by the attributes of what it produces over time—reliability, maintainability, and adaptability. Many "easy" programming constructs produce complex artifacts that create long-term problems. Focus on the user's experience with the running software, not your experience typing it.
+
+## Rule 3: Choose Simplicity in Your Design Foundations
+
+Prefer values over state, functions over methods, data structures over objects, and queues over direct connections. Strictly separate what is being done from how it's implemented. Keep information as pure data rather than wrapping it in objects. Develop "entanglement radar" to detect when things that could be independent are becoming interconnected.

@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --emerald-50: #d7d9fe;
+    --emerald-100: #afb3fd;
+    --emerald-200: #5f67fc;
+    --emerald-300: #141ffb;
+    --emerald-400: #030db9;
+    --emerald-500: #020769;
+    --emerald-600: #020655;
+    --emerald-700: #010441;
+    --emerald-800: #010328;
+    --emerald-900: #000114;
+    --emerald-950: #00010a;
+
+    --leaf-50: #e9f6ea;
+    --leaf-100: #d7efd9;
+    --leaf-200: #aedfb2;
+    --leaf-300: #82ce89;
+    --leaf-400: #5abe62;
+    --leaf-500: #3fa147;
+    --leaf-600: #328039;
+    --leaf-700: #255f2a;
+    --leaf-800: #1a421d;
+    --leaf-900: #0d210f;
+    --leaf-950: #060f06;
+
+    --mustard-50: #fff9e5;
+    --mustard-100: #fff4d1;
+    --mustard-200: #ffe8a3;
+    --mustard-300: #ffdb70;
+    --mustard-400: #ffd042;
+    --mustard-500: #ffc414;
+    --mustard-600: #dba400;
+    --mustard-700: #a37a00;
+    --mustard-800: #705400;
+    --mustard-900: #382a00;
+    --mustard-950: #191300;
+
+    --bianca-50: #f9f7f6;
+    --bianca-100: #f3f0ec;
+    --bianca-200: #e5ded6;
+    --bianca-300: #dacfc4;
+    --bianca-400: #ccbdae;
+    --bianca-500: #c0ae9b;
+    --bianca-600: #a48b6f;
+    --bianca-700: #806951;
+    --bianca-800: #544535;
+    --bianca-900: #2c241c;
+    --bianca-950: #16120e;
+
+    --paper-50: #ffffff;
+    --paper-100: #ffffff;
+    --paper-200: #fffdfa;
+    --paper-300: #fffdfa;
+    --paper-400: #fefbf6;
+    --paper-500: #fefaf3;
+    --paper-600: #f6d497;
+    --paper-700: #efae3e;
+    --paper-800: #b87a0f;
+    --paper-900: #5e3f08;
+    --paper-950: #2f1f04;
+  }
+}

@@ -1,0 +1,142 @@
+---
+description: Use when deciding where to place new files.
+globs: 
+alwaysApply: false
+---
+# Code Placement Protocol
+
+This document outlines how our codebase is organized using ESLint with the `boundaries` plugin to enforce clean architecture.
+
+## Project Structure
+
+```
+src/
+├── app/              # Next.js App Router pages and layouts
+│   ├── api/          # API routes
+│   └── core/         # Authenticated route - all children must be authenticated
+│       └── example   # Authenticated because it is a child of core
+├── components/       # Shared UI components
+├── db/               # Database access layer
+├── features/         # Feature-specific modules
+├── lib/              # Shared utilities
+│   ├── hooks/        # React hooks
+│   └── types/        # TypeScript types
+└── server/           # Server-side utilities
+```
+
+## Element Types & Import Rules
+
+### 1. Shared
+**Locations:** `src/components/**/*`, `src/db/**/*`, `src/lib/**/*`, `src/server/**/*`
+- Can only import other shared modules
+- Hooks must be in `src/lib/hooks`
+- Types must be in `src/lib/types`
+
+### 2. Feature
+**Location:** `src/features/*/**/*`
+- Can import shared modules
+- Can import from within the same feature
+- Can import from the analytics feature
+- Cannot import from other features
+
+### 3. App
+**Location:** `src/app/**/*`
+- Can import shared modules and feature modules
+- Can import CSS files from other app pages/layouts
+- Cannot import from other app pages/layouts (except CSS)
+
+### 4. API Routes
+**Location:** `src/app/api/**/route.ts`
+- Can only import shared modules
+- Must define body schemas (see below)
+
+## API Body Schema Requirements
+
+API routes must use Zod:
+- Define method-specific schemas named `PostSchema`, `PutSchema`, `PatchSchema`, or `DeleteSchema` corresponding to HTTP methods used
+- Validate request bodies using `.parse()` or `.safeParse()` methods
+- Include schema definitions for any HTTP method that modifies data (POST, PUT, PATCH, DELETE)
+
+## Dynamic API Handling
+
+Next.js 15 makes dynamic APIs asynchronous. These include:
+- The `params` and `searchParams` props in pages, layouts, metadata APIs, and route handlers
+- `cookies()`, `draftMode()`, and `headers()` from `next/headers`
+
+### API Routes
+In API route handlers with dynamic segments, always await `params`:
+
+```tsx
+// For /api/[id]/route.ts
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: { id: string } }
+) {
+  // CORRECT: Access params asynchronously
+  const { id } = await params;
+  
+  // INCORRECT: Do not access params directly
+  // const id = params.id; // This will cause an error
+  
+  // Continue with the rest of the handler
+}
+```
+
+Route parameters in query strings do not need to be awaited:
+
+```tsx
+// For query parameters like /api/resource?id=123
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get('id'); // No await needed
+}
+```
+
+### Server Components
+In Server Components, always `await` these APIs:
+
+```tsx
+async function Page({ params }) {
+  // Access params asynchronously
+  const { id } = await params
+  return <p>ID: {id}</p>
+}
+```
+
+### Client Components
+In Client Components, use `React.use()`:
+
+```tsx
+'use client'
+import * as React from 'react'
+
+function Page({ params }) {
+  // Access params in client components
+  const { id } = React.use(params)
+  return <p>ID: {id}</p>
+}
+```
+
+When possible, delay unwrapping these promises until needed to maximize static rendering.
+
+## URL Path Management
+
+### Using pathTo Functions
+
+All URLs must be defined as functions in `src/lib/constants.ts` using the following pattern:
+
+```tsx
+export const pathToResource = (id: string) => `/core/resource/${id}`;
+```
+
+Benefits:
+- Centralized URL management
+- Type safety through function parameters
+- Easy refactoring if URL structure changes
+- Prevents duplication and inconsistencies
+
+### Rules
+- Never hardcode paths in components or pages
+- Always import path functions from `@/lib/constants`
+- Group related path functions together
+- Use descriptive function names (e.g., `pathToProject`, `pathToCollection`)

@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Technology Stack
+
+## Core Framework
+
+- **Next.js** (v15.2.3) - React framework for server-side rendering and static site generation
+  - Note: Never use `<Image/>` components, as we are using OpenNext on Cloudflare. Always use native `<img>` instead.
+- **React** (v19.0.0) - UI library
+- **TypeScript** (v5.5.2) - Type-safe JavaScript
+
+## Hosting & Infrastructure
+
+- **Cloudflare Workers** - Serverless execution environment
+- **OpenNextJS Cloudflare** (v0.6.5) - Adapter for deploying Next.js to Cloudflare
+- **Wrangler** (v4.6.0) - CLI for Cloudflare Workers development
+
+## Database & Storage
+
+- **Cloudflare D1** - SQL database
+- **Cloudflare Images** - Object storage for images
+
+## Authentication
+
+- **Clerk Auth** (v6.12.12) - Authentication and user management
+  - `import { auth } from '@clerk/nextjs/server';`
+  - `const { userId } = await auth();`
+
+## Styling & UI
+
+- **TailwindCSS** (v3.4.4) - Utility-first CSS framework
+- **Framer Motion** (v12.6.2) - Animation library
+- **ClassNames** (v2.5.1) - Utility for conditionally joining class names
+
+## Development Tools
+
+- **ESLint** (v8.57.1) - Code linting
+- **Prettier** (v3.5.3) - Code formatting
+- **PostCSS** (v8.4.38) & **Autoprefixer** (v10.4.19) - CSS processing

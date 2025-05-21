@@ -1,0 +1,235 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# SmartCook Design Guide
+
+## Brand Identity
+
+The SmartCook app logo features a simple, flat design with a black spoon and an orange spark, set against a white background. This minimal color scheme aligns with the app's focus on clarity, creativity, and accessibility while ensuring versatility for favicon use.
+
+## Design Principles
+
+1. **Creative & Inspiring**
+   - Design encourages culinary exploration and creativity
+   - UI elements should inspire users to try new recipe combinations
+   - Content organization reflects the cooking workflow
+
+2. **Clear Visual Hierarchy**
+   - Important information and actions stand out visually
+   - Consistent spacing, typography, and color create natural information flow
+   - Primary actions are immediately identifiable
+
+3. **Accessible & Intuitive**
+   - Text maintains sufficient contrast for readability in various lighting conditions
+   - Interactive elements are easily tappable on mobile devices
+   - Navigation is straightforward for users with varying cooking experience levels
+
+4. **Consistent Styling**
+   - UI elements maintain consistent appearance across the platform
+   - Spacing, shadows, and borders follow predictable patterns
+   - Interactions (hover, focus, active states) behave consistently
+
+5. **Culinary-Oriented**
+   - Visual language resonates with home cooks and food enthusiasts
+   - Metaphors and iconography familiar to the cooking domain
+   - Design prioritizes functionality in kitchen conditions
+
+## Color Palette
+
+### Primary Colors
+
+**Warm Orange** - Primary brand color representing the spark of culinary inspiration
+- Hex: `#F28C38`
+- Light: `orange-100` to `orange-300` - Use for backgrounds, subtle highlights
+- Medium: `orange-400` to `orange-500` - Use for primary buttons, important UI elements
+- Dark: `orange-600` to `orange-800` - Use for text on light backgrounds, hover states
+
+```html
+<!-- Examples -->
+<button class="bg-orange-500 text-white">Primary Action</button>
+<h2 class="text-orange-600">Section Header</h2>
+```
+
+**Soft Green** - Secondary brand color symbolizing sustainability and freshness
+- Hex: `#A8D5BA`
+- Light: `green-100` to `green-300` - Use for success states, secondary backgrounds
+- Medium: `green-400` to `green-500` - Use for eco-friendly indicators, tags
+- Dark: `green-600` to `green-800` - Use for text on light backgrounds
+
+```html
+<!-- Examples -->
+<div class="bg-green-100 text-green-800">Status indicator</div>
+<span class="text-green-500">Eco-friendly tag</span>
+```
+
+### Supporting Colors
+
+**Charcoal Black** - For contrast and readability
+- Hex: `#1A1A1A`
+- Use for text, borders, and icons to ensure legibility
+- Primary text color for content
+
+```html
+<!-- Examples -->
+<p class="text-charcoal">Body text</p>
+<div class="border-charcoal">Card container</div>
+```
+
+**Clean White** - For backgrounds and clarity
+- Hex: `#FFFFFF`
+- Use for page backgrounds, cards, and content areas
+- Creates a clean, uncluttered look
+
+```html
+<!-- Examples -->
+<div class="bg-white shadow-md">Content card</div>
+<main class="bg-white">Page background</main>
+```
+
+**Warm Gray** - For supporting elements
+- Hex: `#D3D3D3`
+- Use for subtle UI elements, dividers, inactive states, or secondary text
+
+```html
+<!-- Examples -->
+<div class="bg-gray-200">Divider</div>
+<span class="text-gray-400">Secondary text</span>
+```
+
+## Typography
+
+- **Headings**: Use larger font sizes with `font-semibold` or `font-bold` in `charcoal`
+- **Body text**: Use `text-sm` or `text-base` in `charcoal` for optimal readability
+- **UI labels**: Use `text-xs` or `text-sm` with appropriate contrast
+- **CTAs/Buttons**: Use `font-semibold` for button text
+
+```html
+<!-- Examples -->
+<h1 class="text-3xl font-bold text-charcoal">Page Title</h1>
+<p class="text-base text-charcoal">Regular content text</p>
+<label class="text-sm text-charcoal-600">Form label</label>
+```
+
+## Component Styling Guidelines
+
+### Buttons
+- Primary: `bg-orange-500 text-white hover:bg-orange-600`
+- Secondary: `bg-green-400 text-charcoal hover:bg-green-500`
+- Text buttons: `text-orange-600 hover:text-orange-700`
+- Buttons should be `rounded-full` for primary CTAs, `rounded-lg` for secondary actions
+
+### Cards & Containers
+- Use `bg-white` for content cards
+- Add `shadow-md` for elevated components
+- Use consistent rounding: `rounded-lg`
+- Maintain consistent padding: `p-4 sm:p-6`
+
+### Forms
+- Inputs: `bg-white border border-gray-200 rounded-lg`
+- Focus states: `focus:ring-2 focus:ring-orange-400 focus:border-orange-400`
+- Error states: Use subtle red indicators for validation errors
+
+### Status Indicators
+- Success: `green-400` background with `charcoal` text
+- Warning: `orange-400` background with `white` text
+- Error: Use red (not in core palette, add as needed)
+- Info: Use light blue (not in core palette, add as needed)
+
+## Responsive Design
+
+- Use Tailwind's responsive prefixes consistently (`sm:`, `md:`, `lg:`, `xl:`)
+- Mobile-first approach with progressive enhancement
+- Critical actions must be accessible on small screens
+- Consider kitchen conditions for mobile users (messy hands, limited attention)
+
+## Accessibility Guidelines
+
+- Maintain AA contrast ratio between text and background (at least 4.5:1)
+- Ensure interactive elements have sufficient size (min 44x44px touch target)
+- Provide visual feedback for all interactive elements
+- Support keyboard navigation where applicable
+
+## Animation
+
+- Use subtle animations for state changes and transitions
+- Keep animations brief (150-300ms)
+- Respect reduced motion preferences
+
+```html
+<!-- Example with Framer Motion -->
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.3 }}
+>
+  Content
+</motion.div>
+```
+
+# Color CSS
+
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Warm Orange - Primary */
+    --orange-50: #FEF3E7;
+    --orange-100: #FCE8CF;
+    --orange-200: #FAD1A0;
+    --orange-300: #F7BB70;
+    --orange-400: #F5A347;
+    --orange-500: #F28C38;
+    --orange-600: #E5781F;
+    --orange-700: #C66314;
+    --orange-800: #A24F0E;
+    --orange-900: #7F3C08;
+    --orange-950: #5C2B05;
+
+    /* Soft Green - Secondary */
+    --green-50: #F2F9F5;
+    --green-100: #E5F3EA;
+    --green-200: #CCE7D5;
+    --green-300: #B7DEBF;
+    --green-400: #A8D5BA;
+    --green-500: #8CC7A5;
+    --green-600: #71B68E;
+    --green-700: #569973;
+    --green-800: #3D7B58;
+    --green-900: #255D3E;
+    --green-950: #153E29;
+
+    /* Charcoal Black - Text */
+    --charcoal-50: #E6E6E6;
+    --charcoal-100: #CCCCCC;
+    --charcoal-200: #999999;
+    --charcoal-300: #666666;
+    --charcoal-400: #4D4D4D;
+    --charcoal-500: #333333;
+    --charcoal-600: #2B2B2B;
+    --charcoal-700: #1F1F1F;
+    --charcoal-800: #1A1A1A;
+    --charcoal-900: #0D0D0D;
+    --charcoal-950: #000000;
+
+    /* Warm Gray - Supporting */
+    --gray-50: #F9F9F9;
+    --gray-100: #F2F2F2;
+    --gray-200: #E6E6E6;
+    --gray-300: #D9D9D9;
+    --gray-400: #D3D3D3;
+    --gray-500: #BFBFBF;
+    --gray-600: #A6A6A6;
+    --gray-700: #808080;
+    --gray-800: #595959;
+    --gray-900: #262626;
+    --gray-950: #0D0D0D;
+  }
+}
+```
+
+
