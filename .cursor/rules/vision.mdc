@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# SmartCook: The Vision
+
+## Core Vision
+
+SmartCook aims to solve the "what to cook tonight" dilemma by suggesting chef-quality meals from whatever ingredients you have on hand - even sparse or unusual combinations. The app intelligently transforms random fridge contents into inspired, gourmet-level recipes while considering dietary preferences, helping users save money and reduce waste.
+
+# Core Issues
+
+1. People run out of cooking ideas and struggle to create meals from random ingredients in their fridge.
+2. Food waste is significant when ingredients go unused and expire.
+3. Most recipe apps require shopping for specific ingredients rather than working with what's available.
+4. Users have diverse dietary restrictions and preferences to consider.
+5. Even experienced home cooks struggle with creative uses for odd ingredient combinations.
+
+## Dual Product Strategy
+
+SmartCook operates with two distinct but complementary products:
+
+1. **Chef-Quality Recipe Recommendation Engine**: An AI-powered system that transforms even sparse or unusual ingredient combinations into delicious, restaurant-worthy meals based on what users have on hand, their preferences, and skill level.
+
+2. **Meal Planning Subscription**: A premium service that provides weekly meal plans, shopping lists, and automated recipe suggestions to minimize waste and simplify shopping, all customized to the user's dietary preferences.
+
+From the casual user's perspective, the app exists to solve the "I have these random ingredients, what can I make?" problem. From the premium subscriber's perspective, SmartCook provides end-to-end meal planning that saves time and reduces waste. The system seamlessly connects these experiences.
+
+# Main Hypothesis
+
+1. AI-powered recipe recommendations can transform limited or unusual ingredient combinations into chef-quality meals.
+2. Users frequently face "cooking block" when staring at random ingredients in their fridge.
+3. A subscription service can automate the mental load of meal planning and grocery shopping.
+4. Personalized suggestions based on ingredient availability will lead to higher user satisfaction.
+5. There is an untapped market for intelligent, waste-reducing meal planning that works with what you already have.

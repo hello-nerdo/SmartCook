@@ -1,0 +1,124 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:eslint-plugin-next-on-pages/recommended",
+    "plugin:storybook/recommended"
+  ],
+  "plugins": ["eslint-plugin-next-on-pages", "boundaries", "api-schema"],
+  "settings": {
+    "boundaries/include": ["src/**/*"],
+    "boundaries/elements": [
+      {
+        "mode": "full",
+        "type": "shared",
+        "pattern": [
+          "src/components/**/*",
+          "src/db/**/*",
+          "src/lib/**/*",
+          "src/server/**/*"
+        ]
+      },
+      {
+        "mode": "full",
+        "type": "middleware",
+        "pattern": ["src/middleware.ts"]
+      },
+      {
+        "mode": "full",
+        "type": "hooks",
+        "pattern": ["src/lib/hooks/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "types",
+        "pattern": ["src/lib/types/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "feature",
+        "capture": ["featureName"],
+        "pattern": ["src/features/*/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "app",
+        "capture": ["_", "fileName"],
+        "pattern": ["src/app/**/*"]
+      },
+      {
+        "mode": "full",
+        "type": "api-route",
+        "pattern": ["src/app/api/**/route.ts"]
+      }
+    ]
+  },
+  "rules": {
+    "@next/next/no-img-element": "off",
+    "boundaries/no-unknown": ["error"],
+    "boundaries/no-unknown-files": ["error"],
+    "boundaries/element-types": [
+      "error",
+      {
+        "default": "disallow",
+        "rules": [
+          {
+            "from": ["shared"],
+            "allow": ["shared", "hooks", "types"]
+          },
+          {
+            "from": ["hooks"],
+            "allow": ["shared", "types"]
+          },
+          {
+            "from": ["types"],
+            "allow": ["shared"]
+          },
+          {
+            "from": ["feature"],
+            "allow": [
+              "shared",
+              "hooks",
+              "types",
+              [
+                "feature",
+                {
+                  "featureName": "${from.featureName}"
+                }
+              ],
+              [
+                "feature",
+                {
+                  "featureName": "analytics"
+                }
+              ]
+            ]
+          },
+          {
+            "from": ["app", "neverImport"],
+            "allow": ["shared", "feature", "hooks", "types"]
+          },
+          {
+            "from": ["app"],
+            "allow": [
+              [
+                "app",
+                {
+                  "fileName": "*.css"
+                }
+              ]
+            ]
+          },
+          {
+            "from": ["api-route"],
+            "allow": ["shared", "hooks", "types"]
+          },
+          {
+            "from": ["middleware"],
+            "allow": ["shared", "hooks", "types"]
+          }
+        ]
+      }
+    ],
+    "api-schema/require-body-schema": "error"
+  }
+}
