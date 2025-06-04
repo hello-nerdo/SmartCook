@@ -90,8 +90,20 @@ export async function POST(request: Request) {
     let recipes;
     
     try {
+      // Clean the content by removing markdown code block formatting if present
+      let cleanedContent = content || '[]';
+      
+      // Remove markdown code block markers if they exist
+      if (cleanedContent.includes('```json')) {
+        cleanedContent = cleanedContent.replace(/```json\s*/, '');
+        cleanedContent = cleanedContent.replace(/\s*```\s*$/, '');
+      } else if (cleanedContent.includes('```')) {
+        cleanedContent = cleanedContent.replace(/```\s*/, '');
+        cleanedContent = cleanedContent.replace(/\s*```\s*$/, '');
+      }
+      
       // Attempt to parse the JSON response
-      recipes = JSON.parse(content || '[]');
+      recipes = JSON.parse(cleanedContent);
     } catch (error) {
       console.error('Failed to parse OpenAI response as JSON:', error);
       // If parsing fails, create a structured response manually

@@ -1,5 +1,6 @@
 -- Drop tables (order matters for FKs if not dropping all)
 DROP TABLE IF EXISTS photos;
+DROP TABLE IF EXISTS recipes;
 
 -- Create photos Table
 CREATE TABLE IF NOT EXISTS photos (
@@ -12,7 +13,21 @@ CREATE TABLE IF NOT EXISTS photos (
   metadata TEXT,
   createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  deletedAt TIMESTAMP DEFAULT NULL,
-  FOREIGN KEY (logId) REFERENCES logs(id) ON DELETE CASCADE,
-  FOREIGN KEY (teamId) REFERENCES teams(id)
+  deletedAt TIMESTAMP DEFAULT NULL
 );
+
+-- Create recipes Table
+CREATE TABLE IF NOT EXISTS recipes (
+  id TEXT PRIMARY KEY NOT NULL,
+  userId TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  preparationTime TEXT NOT NULL,
+  complexity TEXT NOT NULL,
+  ingredients TEXT NOT NULL,
+  instructions TEXT NOT NULL,
+  image TEXT,
+  createdAt TIMESTAMP NOT NULL,
+  updatedAt TIMESTAMP NOT NULL
+);
+

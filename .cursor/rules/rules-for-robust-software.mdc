@@ -3,35 +3,442 @@ description:
 globs: 
 alwaysApply: true
 ---
-# Three Rules for Bug-Free Code (from https://www.youtube.com/watch?v=z43bmaMwagI)
+# Rules for Robust Software
 
-## Rule 1: Concentrate Decisions in One Place
+_Principles for building maintainable JavaScript/TypeScript applications_
 
-Never repeat the same condition in multiple places in your codebase. When the same condition appears in different locations, it creates "wormholes" that lead to synchronization failures. Instead, encapsulate decisions at a single point—typically at object creation time using factory methods—and let the consequences flow from class design rather than conditional logic.
+## Foundation: Understanding Complexity vs Simplicity
 
-## Rule 2: Replace Conditional Logic with Structure
+**Simple** means untangled - one responsibility, one concept, one dimension of the problem. **Easy** means familiar or nearby to your current knowledge. These are completely different concepts. Always choose simple over easy when building systems you'll maintain long-term.
 
-Prefer structural solutions over conditional statements whenever possible:
+**Judge your code by what it produces over time, not by how it feels to write.** Your users don't care that you could type a component in 16 characters - they care that it works reliably and can be modified when requirements change.
 
-- Use assertions to validate and abort invalid states rather than branching around them
-- Leverage value polymorphism (switch statements at function entry points) for value-dependent behavior
-- Employ object polymorphism (subclasses with specialized behavior) for complex conditional behavior
-- Make decisions once, then let the code's structure handle the consequences
+---
 
-## Rule 3: Eliminate Null Checks Through Design
+## Part I: Eliminate the Root Cause of Bugs
 
-Replace null references with null objects that implement the expected interface. This eliminates the need for defensive null checks spread throughout the code, which represent one of the most common forms of duplicated conditions. Move validation to object creation time rather than object usage time, converting runtime checks to compile-time guarantees wherever possible.
+### Rule 1: One Decision, One Place (When It Matters)
 
-# Three Rules for Software Simplicity (from https://www.youtube.com/watch?v=SxdOUGdseq4)
+Extract complex business logic to a single location only when the same condition appears in 3+ places or is likely to change.
 
-## Rule 1: Avoid Entanglement at All Costs
+**For simple cases, use simple solutions:**
 
-Keep components untangled and independent of each other. Entanglement limits understanding and creates complexity. When designs require components to reference each other or share state, you've created a system where changes become increasingly difficult. Complexity isn't about quantity—it's about interconnectedness.
+```typescript
+// This is fine - don't over-engineer
+if (user?.plan === 'premium') {
+  return <PremiumFeature />;
+}
+```
 
-## Rule 2: Judge Constructs by Their Artifacts, Not Your Experience Using Them
+**Extract when you have actual duplication:**
 
-Evaluate code not by how easy it is to write or how familiar it feels, but by the attributes of what it produces over time—reliability, maintainability, and adaptability. Many "easy" programming constructs produce complex artifacts that create long-term problems. Focus on the user's experience with the running software, not your experience typing it.
+```typescript
+// Same complex condition in multiple places - extract it
+const canAccessPremiumFeatures = (user: User | null) =>
+  user?.plan === 'premium' || (user?.credits ?? 0) > 5;
 
-## Rule 3: Choose Simplicity in Your Design Foundations
+// Usage
+function PostCard({ user, postId }: Props) {
+  return canAccessPremiumFeatures(user)
+    ? <PremiumPostCard postId={postId} />
+    : <BasicPostCard postId={postId} />;
+}
+```
 
-Prefer values over state, functions over methods, data structures over objects, and queues over direct connections. Strictly separate what is being done from how it's implemented. Keep information as pure data rather than wrapping it in objects. Develop "entanglement radar" to detect when things that could be independent are becoming interconnected.
+### Rule 2: Structure Over Conditions
+
+Replace branching logic with TypeScript's type system and structural patterns:
+
+**Bad:**
+
+```typescript
+function processWebhook(payload: any) {
+  if (payload.type === 'user.created') {
+    // Handle user creation
+    sendWelcomeEmail(payload.data.email);
+  } else if (payload.type === 'payment.succeeded') {
+    // Handle payment
+    updateUserCredits(payload.data.user_id, payload.data.amount);
+  } else if (payload.type === 'subscription.cancelled') {
+    // Handle cancellation
+    downgradeUser(payload.data.user_id);
+  }
+  // What happens when new webhook types are added?
+}
+```
+
+**Good:**
+
+```typescript
+// Exhaustive discriminated union - compile-time safety
+type WebhookEvent =
+  | { type: 'user.created'; data: { email: string } }
+  | { type: 'payment.succeeded'; data: { user_id: string; amount: number } }
+  | { type: 'subscription.cancelled'; data: { user_id: string } };
+
+const webhookHandlers = {
+  'user.created': async (data: { email: string }) => {
+    await sendWelcomeEmail(data.email);
+  },
+  'payment.succeeded': async (data: { user_id: string; amount: number }) => {
+    await updateUserCredits(data.user_id, data.amount);
+  },
+  'subscription.cancelled': async (data: { user_id: string }) => {
+    await downgradeUser(data.user_id);
+  },
+} as const;
+
+async function processWebhook(payload: WebhookEvent) {
+  const handler = webhookHandlers[payload.type];
+  await handler(payload.data);
+  // TypeScript ensures all cases are handled
+}
+```
+
+### Rule 3: Use Types to Reduce (Not Eliminate) Defensive Programming
+
+Use TypeScript's type system to catch errors at compile time, but keep defensive programming for external boundaries and critical paths.
+
+**Good - Defensive programming at boundaries:**
+
+```typescript
+// External API calls need defense
+async function getUser(userId: string): Promise<User> {
+  const { userId: authUserId } = await auth();
+  if (!authUserId) throw new Error('Unauthorized');
+
+  const user = await db.prepare('SELECT * FROM users WHERE id = ?')
+    .bind(userId).first<User>();
+  if (!user) throw new Error('User not found');
+
+  return user;
+}
+
+// Internal components can trust the types
+function UserProfile({ user }: { user: User }) {
+  return <div>{user.name}</div>; // No null check needed - type guarantees it
+}
+```
+
+**Better - Use TypeScript strict mode + error boundaries:**
+
+```typescript
+// Enable in tsconfig.json:
+// "strict": true, "noUncheckedIndexedAccess": true
+
+function UserProfile({ userId }: Props) {
+  const { data: user, error } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => getUser(userId), // Throws on failure
+  });
+
+  if (error) throw error; // Let error boundary handle it
+  return <div>{user.name}</div>; // TypeScript + React Query guarantee user exists
+}
+```
+
+---
+
+## Part II: Build Simple Architectures
+
+### Rule 4: Separate What from How
+
+Keep business logic independent from implementation details:
+
+**Database Layer (What):**
+
+```sql
+-- Declarative: What data relationships exist
+CREATE VIEW user_activity_summary AS
+SELECT
+  u.id,
+  u.email,
+  COUNT(p.id) as post_count,
+  MAX(p.created_at) as last_post_date,
+  SUM(CASE WHEN p.created_at > datetime('now', '-30 days') THEN 1 ELSE 0 END) as recent_posts
+FROM users u
+LEFT JOIN posts p ON p.user_id = u.id AND p.published = 1
+GROUP BY u.id, u.email;
+```
+
+**Service Layer (How):**
+
+```typescript
+// Interface defines WHAT we need
+interface AnalyticsService {
+  getUserActivity(userId: string): Promise<UserActivity>;
+  getTopUsers(limit: number): Promise<UserActivity[]>;
+}
+
+// Implementation defines HOW (can swap D1 for PostgreSQL, add caching, etc.)
+class D1AnalyticsService implements AnalyticsService {
+  constructor(private db: D1Database) {}
+
+  async getUserActivity(userId: string): Promise<UserActivity> {
+    const result = await this.db
+      .prepare('SELECT * FROM user_activity_summary WHERE id = ?')
+      .bind(userId)
+      .first<UserActivity>();
+
+    if (!result) throw new Error('User not found');
+    return result;
+  }
+}
+```
+
+### Rule 5: Prefer Data Over Objects (For Information, Not Behavior)
+
+Use plain data structures for information transfer and storage. Use classes when you need to encapsulate complex business behavior.
+
+**Good - Data for information:**
+
+```typescript
+// Simple data transfer - no behavior needed
+type BlogPost = {
+  readonly id: string;
+  readonly title: string;
+  readonly content: string;
+  readonly authorId: string;
+  readonly publishedAt: Date | null;
+};
+
+// Pure functions for simple transformations
+const getPostMetrics = (post: BlogPost) => ({
+  wordCount: post.content.split(' ').length,
+  readingTime: Math.ceil(post.content.split(' ').length / 200),
+});
+```
+
+**Also Good - Classes for complex behavior:**
+
+```typescript
+// Complex business logic benefits from encapsulation
+class PostPublisher {
+  constructor(
+    private notificationService: NotificationService,
+    private analyticsService: AnalyticsService
+  ) {}
+
+  async publishPost(post: BlogPost): Promise<BlogPost> {
+    // Complex multi-step process with business rules
+    await this.validatePostContent(post);
+    const publishedPost = { ...post, publishedAt: new Date() };
+    await this.savePost(publishedPost);
+    await this.notificationService.notifyFollowers(post.authorId);
+    await this.analyticsService.trackEvent('post_published', { postId: post.id });
+    return publishedPost;
+  }
+
+  private async validatePostContent(post: BlogPost) {
+    // Complex validation rules...
+  }
+}
+```
+
+### Rule 6: Decouple Sparingly with Clear Communication
+
+Use direct function calls by default. Only introduce indirection (events, context) when you have a proven need for decoupling.
+
+**Default - Direct and clear:**
+
+```typescript
+async function handleSavePost(post: Post) {
+  await savePost(post);
+  await notifyFollowers(post.authorId);
+  trackAnalytics('post_saved', { postId: post.id });
+  showNotification('Post saved!');
+}
+```
+
+**When components need the same data, use React Context:**
+
+```typescript
+// Only when multiple components actually need this data
+const NotificationContext = createContext<{
+  notifications: Notification[];
+  addNotification: (message: string) => void;
+}>({
+  notifications: [],
+  addNotification: () => {},
+});
+
+function useNotifications() {
+  const context = useContext(NotificationContext);
+  if (!context) throw new Error('useNotifications must be used within NotificationProvider');
+  return context;
+}
+```
+
+**Avoid complex event systems unless you have a specific need** like undo/redo, audit logs, or real distributed systems. Most React apps don't need them.
+
+---
+
+## Part III: Optimize for Performance
+
+### Rule 7: Optimize Your Most Frequent Operations
+
+Profile your app to find what actually happens thousands of times, then optimize those specific patterns:
+
+**React Performance:**
+
+```typescript
+// If you render lists frequently, optimize list items
+const PostListItem = React.memo(({ post }: { post: Post }) => {
+  // Only re-renders when post data changes
+  return (
+    <article className="border rounded p-4">
+      <h3>{post.title}</h3>
+      <p>{post.excerpt}</p>
+    </article>
+  );
+});
+
+// If you have expensive calculations, memoize them
+function PostMetrics({ posts }: Props) {
+  const totalWords = useMemo(() =>
+    posts.reduce((sum, post) => sum + post.content.split(' ').length, 0),
+    [posts]
+  );
+
+  return <div>Total words: {totalWords.toLocaleString()}</div>;
+}
+```
+
+**Database Performance:**
+
+```sql
+-- Index your actual query patterns (not theoretical ones)
+-- If you frequently query posts by user + status:
+CREATE INDEX idx_posts_user_status ON posts(user_id, published, created_at DESC);
+
+-- If you frequently check user permissions:
+CREATE INDEX idx_user_roles_lookup ON user_roles(user_id, role_id);
+
+-- Your most common query should be your fastest:
+SELECT p.*, u.name as author_name
+FROM posts p
+JOIN users u ON u.id = p.user_id
+WHERE p.published = 1
+ORDER BY p.created_at DESC
+LIMIT 20; -- Optimize for the common case (first page)
+```
+
+### Rule 8: Colocate Related Data (But Normalize First)
+
+Start with properly normalized database design. Only denormalize when you have proven performance problems.
+
+**Good - Start normalized:**
+
+```sql
+-- Proper normalization prevents data inconsistency
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  avatar_url TEXT
+);
+
+CREATE TABLE posts (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  author_id TEXT NOT NULL REFERENCES users(id),
+  published BOOLEAN DEFAULT FALSE,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Use views for common queries
+CREATE VIEW posts_with_authors AS
+SELECT p.*, u.name as author_name, u.avatar_url as author_avatar
+FROM posts p
+JOIN users u ON u.id = p.author_id;
+```
+
+**Only denormalize when proven necessary:**
+
+```sql
+-- If you measure that author lookups are actually slow
+ALTER TABLE posts ADD COLUMN author_name TEXT;
+ALTER TABLE posts ADD COLUMN author_avatar TEXT;
+
+-- But now you need triggers or application code to maintain consistency
+CREATE TRIGGER update_post_author_info
+AFTER UPDATE OF name, avatar_url ON users
+BEGIN
+  UPDATE posts
+  SET author_name = NEW.name, author_avatar = NEW.avatar_url
+  WHERE author_id = NEW.id;
+END;
+```
+
+**React state - colocate what changes together:**
+
+```typescript
+// Good - related form state together
+const [postForm, setPostForm] = useState({
+  title: '',
+  content: '',
+  isDirty: false,
+});
+
+// Don't colocate unrelated state
+const [user] = useState(/* user data */); // Keep separate
+```
+
+### Rule 9: Calculate Rather Than Store Derived Values
+
+Prefer computation over storage for values that can be quickly derived:
+
+**Good - Calculate on Demand:**
+
+```typescript
+// Don't store these in your database
+const getPostStats = (post: Post) => ({
+  wordCount: post.content.trim().split(/\s+/).length,
+  readingTime: Math.ceil(post.content.trim().split(/\s+/).length / 200),
+  characterCount: post.content.length,
+  paragraphCount: post.content.split('\n\n').length,
+});
+
+// Don't store this in state
+const getFilteredPosts = (posts: Post[], searchTerm: string) =>
+  posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+```
+
+**Exception - Store When Calculation is Expensive:**
+
+```sql
+-- Store aggregates that are expensive to calculate
+CREATE TABLE user_stats (
+  user_id TEXT PRIMARY KEY,
+  total_posts INTEGER DEFAULT 0,
+  total_words INTEGER DEFAULT 0,
+  follower_count INTEGER DEFAULT 0,
+  last_updated DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Update via triggers or background jobs, not on every read
+```
+
+---
+
+## Application Strategy
+
+1. **Start simple** - Use basic `if` statements and direct function calls until complexity actually emerges
+2. **Enable strict TypeScript** - Turn on `strict: true` and `noUncheckedIndexedAccess: true` to catch bugs at compile time
+3. **Extract only real duplication** - Don't create abstractions until you have 3+ instances of the same complex logic
+4. **Normalize your database first** - Only denormalize when you have measured performance problems
+5. **Use defensive programming at boundaries** - External APIs, user input, and database queries need validation
+6. **Keep business logic in classes when complex** - Simple data can be plain objects, but complex behavior benefits from encapsulation
+
+**Success metrics:** Fewer production bugs, faster time to implement new features, easier debugging when things go wrong.
+**Warning signs you're over-engineering:**
+
+- Creating abstractions for single-use cases
+- Adding event systems when direct calls would work
+- Eliminating all defensive programming
+- Denormalizing without performance measurements

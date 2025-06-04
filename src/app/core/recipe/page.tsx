@@ -1,89 +1,88 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Recipe } from '@/lib/types/recipe';
+import { pathToRecipes } from '@/lib/constants';
 
 export default function RecipeDetailPage() {
-  const searchParams = useSearchParams();
+  const router = useRouter();
   const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [servings, setServings] = useState(4);
-  
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
   useEffect(() => {
-    // In a real application, you would fetch the recipe details from an API
-    // using the recipeId from the URL params
-    const recipeData = sessionStorage.getItem('selectedRecipe');
-    
-    if (recipeData) {
+    // Get recipe from sessionStorage
+    const storedRecipe = sessionStorage.getItem('selectedRecipe');
+    if (storedRecipe) {
       try {
-        setRecipe(JSON.parse(recipeData));
+        setRecipe(JSON.parse(storedRecipe));
       } catch (error) {
-        console.error('Error parsing recipe data:', error);
+        console.error('Error parsing recipe:', error);
       }
     }
-    
-    setLoading(false);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-t-orange-500 border-b-orange-300 border-l-orange-300 border-r-orange-300 rounded-full animate-spin"></div>
-          <p className="mt-4 text-charcoal-600">Loading recipe...</p>
-        </div>
-      </div>
-    );
-  }
+  const handleSaveRecipe = async () => {
+    if (!recipe) return;
+
+    setSaving(true);
+    try {
+      const response = await fetch('/api/recipes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: recipe.title,
+          description: recipe.description,
+          preparationTime: recipe.preparationTime,
+          complexity: recipe.complexity,
+          ingredients: recipe.ingredients || [],
+          instructions: recipe.instructions || [],
+          image: recipe.image,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save recipe');
+      }
+
+      setSaveSuccess(true);
+      
+      // Clear save success message after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error saving recipe:', error);
+      alert('Failed to save recipe. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (!recipe) {
     return (
-      <div className="w-full max-w-4xl p-6">
-        <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <h1 className="text-2xl font-bold text-charcoal-800 mb-4">Recipe Not Found</h1>
-          <p className="text-charcoal-600 mb-6">The recipe you're looking for could not be found.</p>
-          <Link 
-            href="/core" 
-            className="bg-orange-500 text-white hover:bg-orange-600 rounded-lg px-6 py-2 font-semibold"
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-xl text-charcoal-600">Recipe not found</p>
+          <button
+            onClick={() => router.push('/core')}
+            className="mt-4 bg-orange-500 text-white px-4 py-2 rounded-lg"
           >
-            Back to Recipes
-          </Link>
+            Go Back
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-4xl p-6">
-      <Link 
-        href="/core" 
-        className="inline-flex items-center text-orange-600 hover:text-orange-700 mb-6"
-      >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="h-5 w-5 mr-1" 
-          viewBox="0 0 20 20" 
-          fill="currentColor"
-        >
-          <path 
-            fillRule="evenodd" 
-            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 010 2H5.414l4.293 4.293a1 1 0 010 1.414z" 
-            clipRule="evenodd" 
-          />
-        </svg>
-        Back to Recipes
-      </Link>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow-md overflow-hidden"
-      >
+    <div className="w-full max-w-4xl p-6 mx-auto">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden">
         {recipe.image && (
-          <div className="w-full h-64 sm:h-80 overflow-hidden">
+          <div className="h-64 overflow-hidden">
             <img
               src={recipe.image}
               alt={recipe.title}
@@ -91,11 +90,10 @@ export default function RecipeDetailPage() {
             />
           </div>
         )}
-        
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-charcoal-800 mb-2">{recipe.title}</h1>
+          <h1 className="text-3xl font-bold text-charcoal-800 mb-4">{recipe.title}</h1>
           
-          <div className="flex flex-wrap items-center gap-4 mb-6">
+          <div className="flex items-center justify-between mb-6">
             <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
               {recipe.preparationTime}
             </span>
@@ -104,52 +102,73 @@ export default function RecipeDetailPage() {
             </span>
           </div>
           
-          <p className="text-charcoal-600 mb-8 text-lg">{recipe.description}</p>
+          <p className="text-charcoal-600 mb-6">{recipe.description}</p>
           
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-charcoal-800">Ingredients</h2>
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setServings(Math.max(1, servings - 1))}
-                  className="bg-gray-200 hover:bg-gray-300 text-charcoal-800 w-8 h-8 rounded-full flex items-center justify-center"
-                >
-                  -
-                </button>
-                <span className="text-charcoal-800">{servings} servings</span>
-                <button 
-                  onClick={() => setServings(servings + 1)}
-                  className="bg-gray-200 hover:bg-gray-300 text-charcoal-800 w-8 h-8 rounded-full flex items-center justify-center"
-                >
-                  +
-                </button>
-              </div>
-            </div>
+            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">Ingredients</h2>
             <ul className="list-disc pl-6 space-y-2">
-              {recipe.ingredients.map((ingredient, index) => (
+              {recipe.ingredients?.map((ingredient, index) => (
                 <li key={index} className="text-charcoal-600">{ingredient}</li>
               ))}
             </ul>
           </div>
           
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-charcoal-800 mb-4">Instructions</h2>
+            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">Instructions</h2>
             <ol className="list-decimal pl-6 space-y-4">
-              {recipe.instructions.map((step, index) => (
-                <li key={index} className="text-charcoal-600">
-                  <p>{step}</p>
-                </li>
+              {recipe.instructions?.map((step, index) => (
+                <li key={index} className="text-charcoal-600">{step}</li>
               ))}
             </ol>
           </div>
           
-          <div className="flex justify-center mt-8">
-            <button className="bg-orange-500 text-white hover:bg-orange-600 rounded-full px-8 py-3 font-semibold">
-              Save Recipe
+          <div className="flex justify-between">
+            <button
+              onClick={() => router.push('/core')}
+              className="bg-gray-200 text-charcoal-800 hover:bg-gray-300 rounded-lg px-6 py-2 font-semibold"
+            >
+              Back
+            </button>
+            
+            <button
+              onClick={handleSaveRecipe}
+              disabled={saving || saveSuccess}
+              className={`${
+                saving || saveSuccess
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-orange-500 text-white hover:bg-orange-600'
+              } rounded-lg px-6 py-2 font-semibold flex items-center`}
+            >
+              {saving ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-t-white border-b-white/50 border-l-white/50 border-r-white/50 rounded-full animate-spin mr-2"></div>
+                  Saving...
+                </>
+              ) : saveSuccess ? (
+                <>
+                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Saved!
+                </>
+              ) : (
+                'Save Recipe'
+              )}
             </button>
           </div>
+          
+          {saveSuccess && (
+            <div className="mt-4 bg-green-100 text-green-800 p-3 rounded-lg text-center">
+              Recipe saved successfully! View your saved recipes <button 
+                onClick={() => router.push(pathToRecipes())}
+                className="underline font-semibold"
+              >
+                here
+              </button>.
+            </div>
+          )}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 } 

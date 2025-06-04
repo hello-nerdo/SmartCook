@@ -1,4 +1,16 @@
 ---
+description: 
+globs: 
+alwaysApply: true
+---
+What is vibe coding.
+Higher level touth
+Reason why it works.
+Agents.
+Building fast.
+Vibosphere.
+
+---
 description: Use when deciding where to place new files.
 globs: 
 alwaysApply: false
@@ -9,7 +21,7 @@ This document outlines how our codebase is organized using ESLint with the `boun
 
 ## Project Structure
 
-```
+``` 
 src/
 ├── app/              # Next.js App Router pages and layouts
 │   ├── api/          # API routes
@@ -25,7 +37,6 @@ src/
 ```
 
 ## Element Types & Import Rules
-
 ### 1. Shared
 **Locations:** `src/components/**/*`, `src/db/**/*`, `src/lib/**/*`, `src/server/**/*`
 - Can only import other shared modules

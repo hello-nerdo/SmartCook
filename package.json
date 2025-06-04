@@ -10,8 +10,8 @@
     "preview": "npm run types && opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "preview:now": "opennextjs-cloudflare preview",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-    "reset-db": "wrangler d1 execute smart_cook_db --local --file=src/db/migrations/drop-and-create-tables.sql",
-    "reset-db:prod": "wrangler d1 execute smart_cook_db --remote --file=src/db/migrations/drop-and-create-tables.sql",
+    "reset-db": "wrangler d1 execute smart_cook_db --local --file=src/db/setup/drop-and-create-tables.sql",
+    "reset-db:prod": "wrangler d1 execute smart_cook_db --remote --file=src/db/setup/drop-and-create-tables.sql",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
     "pretty": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\""
   },

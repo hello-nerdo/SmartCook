@@ -1,0 +1,161 @@
+home@Jacquess-MacBook-Pro SmartCook % npm run dev
+
+> dev
+> next dev --turbopack
+
+   ▲ Next.js 15.2.3 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.255.209.25:3000
+   - Environments: .env.local, .env
+
+ ✓ Starting...
+Using vars defined in .dev.vars
+ ✓ Compiled in 549ms
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 3.8s
+ GET / 200 in 4240ms
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 950ms
+ GET /auth/login 200 in 1179ms
+ ○ Compiling /core ...
+ ✓ Compiled /core in 1216ms
+ GET /core 200 in 1280ms
+ GET /core 200 in 78ms
+ ✓ Compiled in 34ms
+ ✓ Compiled /core in 25ms
+ GET /core 200 in 163ms
+ GET /core 200 in 44ms
+ GET /core 200 in 38ms
+ GET /core 200 in 245ms
+ GET /core 200 in 311ms
+ GET /core 200 in 94ms
+ GET /core 200 in 169ms
+ GET /core 200 in 76ms
+ ✓ Compiled in 54ms
+ GET /core 200 in 192ms
+ ✓ Compiled in 52ms
+ GET /core 200 in 267ms
+ ✓ Compiled in 61ms
+ ✓ Compiled /core in 445ms
+ GET /core 200 in 781ms
+ ✓ Compiled in 740ms
+ ○ Compiling /core/recipes ...
+ ✓ Compiled /core/recipes in 851ms
+ GET /core/recipes 200 in 902ms
+ ○ Compiling /api/recipes ...
+ ✓ Compiled /api/recipes in 1061ms
+ GET /api/recipes 200 in 1258ms
+ GET /api/recipes 200 in 71ms
+ GET /core/recipes 200 in 38ms
+ ✓ Compiled / in 17ms
+ GET / 200 in 113ms
+ ✓ Compiled /auth/login in 15ms
+ GET /auth/login 200 in 245ms
+ GET /core 200 in 145ms
+ GET /core 200 in 194ms
+ ○ Compiling /api/recipes/recommend ...
+ ✓ Compiled /api/recipes/recommend in 735ms
+Failed to parse OpenAI response as JSON: SyntaxError: Unexpected token '`', "```json
+[
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at POST (src/app/api/recipes/recommend/route.ts:94:21)
+  92 |     try {
+  93 |       // Attempt to parse the JSON response
+> 94 |       recipes = JSON.parse(content || '[]');
+     |                     ^
+  95 |     } catch (error) {
+  96 |       console.error('Failed to parse OpenAI response as JSON:', error);
+  97 |       // If parsing fails, create a structured response manually
+ POST /api/recipes/recommend 200 in 17842ms
+ ○ Compiling /core/recipe ...
+ ✓ Compiled /core/recipe in 1438ms
+ GET /core/recipe 200 in 1523ms
+ GET /core/recipe 200 in 87ms
+ ✓ Compiled in 78ms
+ GET /core 200 in 115ms
+ ✓ Compiled in 106ms
+Failed to parse OpenAI response as JSON: SyntaxError: Unexpected token '`', "```json
+[
+"... is not valid JSON
+    at JSON.parse (<anonymous>)
+    at POST (src/app/api/recipes/recommend/route.ts:94:21)
+  92 |     try {
+  93 |       // Attempt to parse the JSON response
+> 94 |       recipes = JSON.parse(content || '[]');
+     |                     ^
+  95 |     } catch (error) {
+  96 |       console.error('Failed to parse OpenAI response as JSON:', error);
+  97 |       // If parsing fails, create a structured response manually
+ POST /api/recipes/recommend 200 in 15783ms
+ POST /api/recipes/recommend 200 in 14522ms
+ GET /core/recipes 200 in 41ms
+ GET /api/recipes 200 in 63ms
+ GET /api/recipes 200 in 51ms
+ GET /core 200 in 108ms
+ GET /core/recipes 200 in 41ms
+ GET /api/recipes 200 in 51ms
+ GET /api/recipes 200 in 54ms
+ GET /core 200 in 43ms
+ GET /core/recipes 200 in 34ms
+ GET /api/recipes 200 in 44ms
+ GET /api/recipes 200 in 75ms
+ GET /core/recipes 200 in 40ms
+ GET /core/recipes 200 in 38ms
+ GET / 200 in 44ms
+ GET /auth/login 200 in 168ms
+ GET /core 200 in 265ms
+ GET /core 200 in 238ms
+ POST /api/recipes/recommend 200 in 15017ms
+ GET /core/recipes 200 in 56ms
+ GET /api/recipes 200 in 255ms
+ GET /api/recipes 200 in 161ms
+ ✓ Compiled in 465ms
+ GET /core/recipes 200 in 856ms
+ GET /core/recipes 200 in 241ms
+ GET /api/recipes 200 in 113ms
+ ✓ Compiled /core/recipes in 21ms
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ GET /core/recipes 200 in 978ms
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ GET /core/recipes 200 in 1702ms
+ GET /core/recipes 200 in 1579ms
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ GET /core/recipes 200 in 1391ms
+ GET /core/recipes 200 in 570ms
+ ✓ Compiled in 334ms
+ ⨯ Error: Functions cannot be passed directly to Client Components unless you explicitly expose it by marking it with "use server". Or maybe you meant to call this function rather than return it.
+  <... href={function pathToRecipes} className=... children=...>
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+    at stringify (<anonymous>) {
+  digest: '488314398'
+}
+ GET /core/recipes 500 in 837ms
