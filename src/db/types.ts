@@ -35,8 +35,8 @@ export type DBRecipe = z.infer<typeof RecipeSchema>;
 
 // API Schema for creating a new recipe
 export const CreateRecipeSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
   preparationTime: z.enum(['any', 'quick', 'medium', 'long']),
   complexity: z.enum(['any', 'easy', 'medium', 'hard']),
   ingredients: z.array(z.string()),

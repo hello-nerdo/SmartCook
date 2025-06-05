@@ -1,9 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { Recipe, RecipeResponse, ComplexityLevel, PrepTime } from '@/lib/types/recipe';
+
+import React, { useState } from 'react';
+
+import {
+  ComplexityLevel,
+  PrepTime,
+  Recipe,
+  RecipeResponse,
+} from '@/lib/types/recipe';
 
 export default function RecipeRecommendationPage() {
   const router = useRouter();
@@ -55,7 +62,7 @@ export default function RecipeRecommendationPage() {
         throw new Error('Failed to fetch recipe recommendations');
       }
 
-      const data = await response.json() as RecipeResponse;
+      const data = (await response.json()) as RecipeResponse;
       setRecipes(data.recipes);
     } catch (error) {
       console.error('Error fetching recipes:', error);
@@ -76,10 +83,13 @@ export default function RecipeRecommendationPage() {
       <h1 className="text-3xl font-bold text-center text-charcoal-800 mb-8">
         Find Recipes With Your Ingredients
       </h1>
-      
+
       <div className="bg-white rounded-lg shadow-md p-6 mb-8">
         <div className="mb-6">
-          <label htmlFor="ingredients" className="block text-charcoal-700 text-sm font-semibold mb-2">
+          <label
+            htmlFor="ingredients"
+            className="block text-charcoal-700 text-sm font-semibold mb-2"
+          >
             Add your available ingredients:
           </label>
           <div className="flex">
@@ -103,7 +113,9 @@ export default function RecipeRecommendationPage() {
 
         {ingredients.length > 0 && (
           <div className="mb-6">
-            <p className="text-sm font-semibold text-charcoal-700 mb-2">Your ingredients:</p>
+            <p className="text-sm font-semibold text-charcoal-700 mb-2">
+              Your ingredients:
+            </p>
             <div className="flex flex-wrap gap-2">
               {ingredients.map((ingredient, index) => (
                 <motion.div
@@ -127,7 +139,10 @@ export default function RecipeRecommendationPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <label htmlFor="complexity" className="block text-charcoal-700 text-sm font-semibold mb-2">
+            <label
+              htmlFor="complexity"
+              className="block text-charcoal-700 text-sm font-semibold mb-2"
+            >
               Recipe Complexity:
             </label>
             <select
@@ -143,7 +158,10 @@ export default function RecipeRecommendationPage() {
             </select>
           </div>
           <div>
-            <label htmlFor="prepTime" className="block text-charcoal-700 text-sm font-semibold mb-2">
+            <label
+              htmlFor="prepTime"
+              className="block text-charcoal-700 text-sm font-semibold mb-2"
+            >
               Preparation Time:
             </label>
             <select
@@ -175,7 +193,9 @@ export default function RecipeRecommendationPage() {
 
       {recipes.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold text-charcoal-800 mb-4">Recipe Recommendations</h2>
+          <h2 className="text-2xl font-bold text-charcoal-800 mb-4">
+            Recipe Recommendations
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {recipes.map((recipe, index) => (
               <motion.div
@@ -195,9 +215,13 @@ export default function RecipeRecommendationPage() {
                   </div>
                 )}
                 <div className="p-4">
-                  <h3 className="text-xl font-semibold text-charcoal-800 mb-2">{recipe.title}</h3>
+                  <h3 className="text-xl font-semibold text-charcoal-800 mb-2">
+                    {recipe.title}
+                  </h3>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-600">{recipe.preparationTime}</span>
+                    <span className="text-sm text-gray-600">
+                      {recipe.preparationTime}
+                    </span>
                     <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
                       {recipe.complexity}
                     </span>

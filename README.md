@@ -177,8 +177,14 @@ npm --version   # Should show v10.x.x
 | `npm run reset-db` | Reset local database |
 | `npm run reset-db:prod` | Reset production database |
 | `npm run lint` | Run ESLint with auto-fix |
+| `npm run lint:check` | Run ESLint without auto-fix |
 | `npm run pretty` | Format code with Prettier |
+| `npm run pretty:check` | Check code formatting with Prettier |
 | `npm run types` | Type-check without emitting |
+| `npm test` | Run type checking and linting |
+| `npm run test:format` | Run all checks including formatting |
+| `npm run test:fix` | Run all checks and auto-fix issues |
+| `npm run validate` | Run tests and build for production |
 
 ## 🎨 Design System
 
@@ -242,19 +248,27 @@ SmartCook uses a carefully crafted design system that embodies culinary creativi
 
 1. **Fork the repository**
 2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Follow the code style** (run `npm run lint` and `npm run pretty`)
-4. **Test your changes** thoroughly
-5. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-6. **Push to the branch** (`git push origin feature/amazing-feature`)
-7. **Open a Pull Request**
+3. **Run tests** (`npm test` to check types and linting)
+4. **Fix any issues** (`npm run test:fix` to auto-fix code style)
+5. **Test your changes** thoroughly
+6. **Commit your changes** (`git commit -m 'Add amazing feature'`)
+7. **Push to the branch** (`git push origin feature/amazing-feature`)
+8. **Open a Pull Request**
 
 ### Development Guidelines
 - Follow the established file structure and naming conventions
 - Use TypeScript strictly - no `any` types
-- Write tests for complex business logic
+- Run `npm test` before committing to ensure code quality
+- Use `npm run test:fix` to automatically fix formatting and linting issues
 - Ensure all API routes have proper Zod validation
 - Follow the design system for UI components
 - Optimize for mobile-first responsive design
+
+### Testing Commands
+- `npm test` - Quick check (types + linting)
+- `npm run test:format` - Full check (includes formatting)
+- `npm run test:fix` - Auto-fix all issues
+- `npm run validate` - Complete validation (tests + build)
 
 ## 📄 License
 

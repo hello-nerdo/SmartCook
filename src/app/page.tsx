@@ -7,8 +7,6 @@ import Link from 'next/link';
 import { LOGIN_REDIRECT_URL } from '@/lib/constants';
 
 export default function Home() {
-
-
   return (
     <AnimatePresence>
       <div
@@ -71,7 +69,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
       </div>
     </AnimatePresence>
   );

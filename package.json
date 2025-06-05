@@ -13,7 +13,13 @@
     "reset-db": "wrangler d1 execute smart_cook_db --local --file=src/db/setup/drop-and-create-tables.sql",
     "reset-db:prod": "wrangler d1 execute smart_cook_db --remote --file=src/db/setup/drop-and-create-tables.sql",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
-    "pretty": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\""
+    "lint:check": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "pretty": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "pretty:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "test": "npm run types && npm run lint:check",
+    "test:format": "npm run types && npm run lint:check && npm run pretty:check",
+    "test:fix": "npm run types && npm run lint && npm run pretty",
+    "validate": "npm run test && npm run build"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.12",

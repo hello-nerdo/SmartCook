@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { Recipe } from '@/lib/types/recipe';
+
+import React, { useEffect, useState } from 'react';
+
 import { pathToRecipe } from '@/lib/constants';
+import { Recipe } from '@/lib/types/recipe';
 
 interface RecipesResponse {
   recipes: Recipe[];
@@ -14,17 +16,17 @@ export default function SavedRecipesPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   useEffect(() => {
     async function fetchRecipes() {
       try {
         const response = await fetch('/api/recipes');
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch recipes');
         }
-        
-        const data = await response.json() as RecipesResponse;
+
+        const data = (await response.json()) as RecipesResponse;
         setRecipes(data.recipes || []);
       } catch (err) {
         console.error('Error fetching recipes:', err);
@@ -33,26 +35,29 @@ export default function SavedRecipesPage() {
         setLoading(false);
       }
     }
-    
+
     fetchRecipes();
   }, []);
-  
+
   async function handleDeleteRecipe(id: string) {
-    if (!id || !window.confirm('Are you sure you want to delete this recipe?')) {
+    if (
+      !id ||
+      !window.confirm('Are you sure you want to delete this recipe?')
+    ) {
       return;
     }
-    
+
     try {
       const response = await fetch(`/api/recipes/${id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete recipe');
       }
-      
+
       // Filter out the deleted recipe
-      setRecipes(recipes.filter(recipe => recipe.id !== id));
+      setRecipes(recipes.filter((recipe) => recipe.id !== id));
     } catch (err) {
       console.error('Error deleting recipe:', err);
       alert('Failed to delete recipe');
@@ -88,14 +93,21 @@ export default function SavedRecipesPage() {
 
   return (
     <div className="w-full max-w-4xl p-6 mx-auto">
-      <h1 className="text-3xl font-bold text-charcoal-800 mb-8">My Saved Recipes</h1>
-      
+      <h1 className="text-3xl font-bold text-charcoal-800 mb-8">
+        My Saved Recipes
+      </h1>
+
       {recipes.length === 0 ? (
         <div className="bg-white rounded-lg shadow-md p-6 text-center">
-          <h2 className="text-2xl font-bold text-charcoal-800 mb-4">No Recipes Yet</h2>
-          <p className="text-charcoal-600 mb-6">You haven&apos;t saved any recipes yet. Discover new recipes and save them to your collection!</p>
-          <Link 
-            href="/core" 
+          <h2 className="text-2xl font-bold text-charcoal-800 mb-4">
+            No Recipes Yet
+          </h2>
+          <p className="text-charcoal-600 mb-6">
+            You haven&apos;t saved any recipes yet. Discover new recipes and
+            save them to your collection!
+          </p>
+          <Link
+            href="/core"
             className="bg-orange-500 text-white hover:bg-orange-600 rounded-lg px-6 py-2 font-semibold"
           >
             Find Recipes
@@ -121,9 +133,13 @@ export default function SavedRecipesPage() {
                 </div>
               )}
               <div className="p-4">
-                <h3 className="text-xl font-semibold text-charcoal-800 mb-2">{recipe.title}</h3>
+                <h3 className="text-xl font-semibold text-charcoal-800 mb-2">
+                  {recipe.title}
+                </h3>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-600">{recipe.preparationTime}</span>
+                  <span className="text-sm text-gray-600">
+                    {recipe.preparationTime}
+                  </span>
                   <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
                     {recipe.complexity}
                   </span>
@@ -150,4 +166,4 @@ export default function SavedRecipesPage() {
       )}
     </div>
   );
-} 
+}
