@@ -93,11 +93,36 @@ src/
 
 ### Prerequisites
 
-- **Node.js** 18+ 
+- **Node.js** 18.18.0+ (required for Next.js 15)
 - **npm** or **yarn**
 - **Cloudflare account** (for deployment)
 - **Clerk account** (for authentication)
 - **OpenAI API key** (for AI features)
+
+#### Node.js Version Management
+
+This project requires **Node.js 18.18.0 or higher** to work with Next.js 15. We recommend using **nvm** (Node Version Manager) to easily switch between Node.js versions.
+
+**Install nvm (macOS/Linux):**
+```bash
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Restart your terminal or reload shell configuration
+source ~/.zshrc  # or ~/.bashrc
+
+# Install and use Node.js 20 LTS
+nvm install 20
+nvm use 20
+
+# Verify installation
+node --version  # Should show v20.x.x
+npm --version   # Should show v10.x.x
+```
+
+**For Windows users:**
+- Download Node.js 20 LTS from [nodejs.org](https://nodejs.org)
+- Or use [nvm-windows](https://github.com/coreybutler/nvm-windows)
 
 ### Installation
 
