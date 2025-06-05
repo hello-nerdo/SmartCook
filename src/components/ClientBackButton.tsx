@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 import { FiArrowLeft } from 'react-icons/fi';
 
-import { pathToProject } from '@/lib/constants';
+import { pathToCore } from '@/lib/constants';
 
 export function ClientBackButton({ projectId }: { projectId?: string }) {
   const pathname = usePathname();
@@ -25,7 +25,7 @@ export function ClientBackButton({ projectId }: { projectId?: string }) {
   return (
     <div className="w-full mt-4">
       <Link
-        href={pathToProject(extractedProjectId)}
+        href={pathToCore()}
         className="flex items-center text-leaf-600 hover:text-leaf-700"
       >
         <FiArrowLeft className="w-4 h-4 mr-1" />

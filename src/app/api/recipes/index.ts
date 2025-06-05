@@ -1,23 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
-import { saveRecipe } from '@/server/recipe-actions';
-import { CreateRecipeSchema } from '@/db/types';
+import { NextRequest, NextResponse } from 'next/server';
+
 import { Recipe } from '@/lib/types/recipe';
+
+import { CreateRecipeSchema } from '@/db/types';
+import { saveRecipe } from '@/server/recipe-actions';
 
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Parse and validate the request body
     const body = await request.json();
-    
+
     try {
       // Validate with Zod schema
       CreateRecipeSchema.parse(body);
@@ -29,12 +28,9 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await saveRecipe(body as Recipe);
-    
+
     if (!result.success) {
-      return NextResponse.json(
-        { error: result.error },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: result.error }, { status: 500 });
     }
 
     return NextResponse.json({ recipe: result.recipe }, { status: 201 });
@@ -45,4 +41,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-} 
+}

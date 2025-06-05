@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Recipe } from '@/lib/types/recipe';
+
+import React, { useEffect, useState } from 'react';
+
 import { pathToRecipes } from '@/lib/constants';
+import { Recipe } from '@/lib/types/recipe';
 
 export default function RecipeDetailPage() {
   const router = useRouter();
@@ -49,7 +51,7 @@ export default function RecipeDetailPage() {
       }
 
       setSaveSuccess(true);
-      
+
       // Clear save success message after 3 seconds
       setTimeout(() => {
         setSaveSuccess(false);
@@ -91,8 +93,10 @@ export default function RecipeDetailPage() {
           </div>
         )}
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-charcoal-800 mb-4">{recipe.title}</h1>
-          
+          <h1 className="text-3xl font-bold text-charcoal-800 mb-4">
+            {recipe.title}
+          </h1>
+
           <div className="flex items-center justify-between mb-6">
             <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
               {recipe.preparationTime}
@@ -101,27 +105,35 @@ export default function RecipeDetailPage() {
               {recipe.complexity}
             </span>
           </div>
-          
+
           <p className="text-charcoal-600 mb-6">{recipe.description}</p>
-          
+
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">Ingredients</h2>
+            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">
+              Ingredients
+            </h2>
             <ul className="list-disc pl-6 space-y-2">
               {recipe.ingredients?.map((ingredient, index) => (
-                <li key={index} className="text-charcoal-600">{ingredient}</li>
+                <li key={index} className="text-charcoal-600">
+                  {ingredient}
+                </li>
               ))}
             </ul>
           </div>
-          
+
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">Instructions</h2>
+            <h2 className="text-xl font-semibold text-charcoal-800 mb-3">
+              Instructions
+            </h2>
             <ol className="list-decimal pl-6 space-y-4">
               {recipe.instructions?.map((step, index) => (
-                <li key={index} className="text-charcoal-600">{step}</li>
+                <li key={index} className="text-charcoal-600">
+                  {step}
+                </li>
               ))}
             </ol>
           </div>
-          
+
           <div className="flex justify-between">
             <button
               onClick={() => router.push('/core')}
@@ -129,7 +141,7 @@ export default function RecipeDetailPage() {
             >
               Back
             </button>
-            
+
             <button
               onClick={handleSaveRecipe}
               disabled={saving || saveSuccess}
@@ -146,8 +158,19 @@ export default function RecipeDetailPage() {
                 </>
               ) : saveSuccess ? (
                 <>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                   Saved!
                 </>
@@ -156,19 +179,21 @@ export default function RecipeDetailPage() {
               )}
             </button>
           </div>
-          
+
           {saveSuccess && (
             <div className="mt-4 bg-green-100 text-green-800 p-3 rounded-lg text-center">
-              Recipe saved successfully! View your saved recipes <button 
+              Recipe saved successfully! View your saved recipes{' '}
+              <button
                 onClick={() => router.push(pathToRecipes())}
                 className="underline font-semibold"
               >
                 here
-              </button>.
+              </button>
+              .
             </div>
           )}
         </div>
       </div>
     </div>
   );
-} 
+}

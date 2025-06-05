@@ -15,7 +15,8 @@ export interface Recipe {
   updatedAt?: string;
 }
 
-export interface DatabaseRecipe extends Prettify<Omit<Recipe, 'ingredients' | 'instructions'>> {
+export interface DatabaseRecipe
+  extends Prettify<Omit<Recipe, 'ingredients' | 'instructions'>> {
   ingredients: string; // JSON string in the database
   instructions: string; // JSON string in the database
 }
@@ -25,4 +26,4 @@ export interface RecipeResponse {
 }
 
 export type ComplexityLevel = 'any' | 'easy' | 'medium' | 'hard';
-export type PrepTime = 'any' | 'quick' | 'medium' | 'long'; 
+export type PrepTime = 'any' | 'quick' | 'medium' | 'long';

@@ -1,12 +1,13 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 import { nanoid } from 'nanoid';
+import { redirect } from 'next/navigation';
 
 import { LOGIN_REDIRECT_URL } from '@/lib/constants';
+import { DatabaseRecipe, Recipe } from '@/lib/types/recipe';
+
 import { getDb } from '@/db';
-import { Recipe, DatabaseRecipe } from '@/lib/types/recipe';
 import { CreateRecipeSchema, DBRecipe, UpdateRecipeSchema } from '@/db/types';
 
 // Define response types
@@ -34,14 +35,12 @@ type RecipesErrorResponse = {
 
 type RecipesResponse = RecipesSuccessResponse | RecipesErrorResponse;
 
-type DeleteRecipeResponse = 
+type DeleteRecipeResponse =
   | { success: true }
   | { success: false; error: string };
 
 // Save a new recipe
-export async function saveRecipe(
-  recipe: Recipe
-): Promise<RecipeResponse> {
+export async function saveRecipe(recipe: Recipe): Promise<RecipeResponse> {
   try {
     const { userId } = await auth();
     if (!userId) {
@@ -53,7 +52,9 @@ export async function saveRecipe(
       ...recipe,
       // Ensure arrays for ingredients and instructions
       ingredients: Array.isArray(recipe.ingredients) ? recipe.ingredients : [],
-      instructions: Array.isArray(recipe.instructions) ? recipe.instructions : []
+      instructions: Array.isArray(recipe.instructions)
+        ? recipe.instructions
+        : [],
     });
 
     const db = await getDb();
@@ -72,7 +73,7 @@ export async function saveRecipe(
       instructions: JSON.stringify(validatedData.instructions),
       image: validatedData.image,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
 
     // Insert into database
@@ -109,14 +110,14 @@ export async function saveRecipe(
       recipe: {
         ...dbRecipe,
         ingredients: validatedData.ingredients,
-        instructions: validatedData.instructions
-      }
+        instructions: validatedData.instructions,
+      },
     };
   } catch (error) {
     console.error('Error saving recipe:', error);
-    return { 
+    return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to save recipe'
+      error: error instanceof Error ? error.message : 'Failed to save recipe',
     };
   }
 }
@@ -141,10 +142,10 @@ export async function getUserRecipes(): Promise<RecipesResponse> {
     }
 
     // Convert database records to Recipe objects
-    const recipes = (result.results as DBRecipe[]).map(dbRecipe => ({
+    const recipes = (result.results as DBRecipe[]).map((dbRecipe) => ({
       ...dbRecipe,
       ingredients: JSON.parse(dbRecipe.ingredients) as string[],
-      instructions: JSON.parse(dbRecipe.instructions) as string[]
+      instructions: JSON.parse(dbRecipe.instructions) as string[],
     }));
 
     return { success: true, recipes };
@@ -152,7 +153,7 @@ export async function getUserRecipes(): Promise<RecipesResponse> {
     console.error('Error fetching recipes:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch recipes'
+      error: error instanceof Error ? error.message : 'Failed to fetch recipes',
     };
   }
 }
@@ -176,12 +177,12 @@ export async function getRecipe(id: string): Promise<RecipeResponse> {
     }
 
     const dbRecipe = result as DBRecipe;
-    
+
     // Convert JSON strings to arrays
     const recipe: Recipe = {
       ...dbRecipe,
       ingredients: JSON.parse(dbRecipe.ingredients) as string[],
-      instructions: JSON.parse(dbRecipe.instructions) as string[]
+      instructions: JSON.parse(dbRecipe.instructions) as string[],
     };
 
     return { success: true, recipe };
@@ -189,7 +190,7 @@ export async function getRecipe(id: string): Promise<RecipeResponse> {
     console.error('Error fetching recipe:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to fetch recipe'
+      error: error instanceof Error ? error.message : 'Failed to fetch recipe',
     };
   }
 }
@@ -216,7 +217,10 @@ export async function updateRecipe(
       .first();
 
     if (!existingRecipe) {
-      return { success: false, error: 'Recipe not found or you do not have permission to update it' };
+      return {
+        success: false,
+        error: 'Recipe not found or you do not have permission to update it',
+      };
     }
 
     // Prepare update fields and values
@@ -269,14 +273,12 @@ export async function updateRecipe(
 
     // Generate SET clause
     const setClause = Object.keys(updates)
-      .map(key => `${key} = ?`)
+      .map((key) => `${key} = ?`)
       .join(', ');
 
     // Execute the update
     const result = await db
-      .prepare(
-        `UPDATE recipes SET ${setClause} WHERE id = ? AND userId = ?`
-      )
+      .prepare(`UPDATE recipes SET ${setClause} WHERE id = ? AND userId = ?`)
       .bind(...values)
       .run();
 
@@ -291,7 +293,7 @@ export async function updateRecipe(
     console.error('Error updating recipe:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to update recipe'
+      error: error instanceof Error ? error.message : 'Failed to update recipe',
     };
   }
 }
@@ -305,7 +307,7 @@ export async function deleteRecipe(id: string): Promise<DeleteRecipeResponse> {
     }
 
     const db = await getDb();
-    
+
     // Verify ownership before deleting
     const existingRecipe = await db
       .prepare('SELECT id FROM recipes WHERE id = ? AND userId = ?')
@@ -313,7 +315,10 @@ export async function deleteRecipe(id: string): Promise<DeleteRecipeResponse> {
       .first();
 
     if (!existingRecipe) {
-      return { success: false, error: 'Recipe not found or you do not have permission to delete it' };
+      return {
+        success: false,
+        error: 'Recipe not found or you do not have permission to delete it',
+      };
     }
 
     // Delete the recipe
@@ -332,7 +337,7 @@ export async function deleteRecipe(id: string): Promise<DeleteRecipeResponse> {
     console.error('Error deleting recipe:', error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to delete recipe'
+      error: error instanceof Error ? error.message : 'Failed to delete recipe',
     };
   }
-} 
+}

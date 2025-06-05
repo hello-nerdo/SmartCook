@@ -1,13 +1,13 @@
 import { auth } from '@clerk/nextjs/server';
-import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 import { z } from 'zod';
 
 // Define PostSchema for request validation
 const PostSchema = z.object({
   ingredients: z.array(z.string()).nonempty('Ingredients are required'),
   complexity: z.enum(['any', 'easy', 'medium', 'hard']).default('any'),
-  prepTime: z.enum(['any', 'quick', 'medium', 'long']).default('any')
+  prepTime: z.enum(['any', 'quick', 'medium', 'long']).default('any'),
 });
 
 const openai = new OpenAI({
@@ -18,12 +18,9 @@ export async function POST(request: Request) {
   try {
     // Check authentication (optional, depending on your requirements)
     const { userId } = await auth();
-    
+
     if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get request body and validate with schema
@@ -33,7 +30,7 @@ export async function POST(request: Request) {
 
     // Format the ingredients for the prompt
     const ingredientsList = ingredients.join(', ');
-    
+
     // Create complexity and prep time filters
     let complexityFilter = '';
     if (complexity && complexity !== 'any') {
@@ -45,7 +42,7 @@ export async function POST(request: Request) {
       const timeMap: Record<string, string> = {
         quick: 'under 30 minutes',
         medium: 'between 30 and 60 minutes',
-        long: 'over 60 minutes'
+        long: 'over 60 minutes',
       };
       timeFilter = `The recipes should take ${timeMap[prepTime]} to prepare.`;
     }
@@ -70,16 +67,17 @@ export async function POST(request: Request) {
 
     // Call OpenAI API
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: 'gpt-4o-mini',
       messages: [
-        { 
-          role: "system", 
-          content: "You are a professional chef specialized in creating delicious recipes from available ingredients. You excel at suggesting creative combinations and clear instructions." 
+        {
+          role: 'system',
+          content:
+            'You are a professional chef specialized in creating delicious recipes from available ingredients. You excel at suggesting creative combinations and clear instructions.',
         },
-        { 
-          role: "user", 
-          content: prompt 
-        }
+        {
+          role: 'user',
+          content: prompt,
+        },
       ],
       temperature: 0.7,
       max_tokens: 2000,
@@ -88,11 +86,11 @@ export async function POST(request: Request) {
     // Parse the response
     const content = response.choices[0].message.content;
     let recipes;
-    
+
     try {
       // Clean the content by removing markdown code block formatting if present
       let cleanedContent = content || '[]';
-      
+
       // Remove markdown code block markers if they exist
       if (cleanedContent.includes('```json')) {
         cleanedContent = cleanedContent.replace(/```json\s*/, '');
@@ -101,21 +99,24 @@ export async function POST(request: Request) {
         cleanedContent = cleanedContent.replace(/```\s*/, '');
         cleanedContent = cleanedContent.replace(/\s*```\s*$/, '');
       }
-      
+
       // Attempt to parse the JSON response
       recipes = JSON.parse(cleanedContent);
     } catch (error) {
       console.error('Failed to parse OpenAI response as JSON:', error);
       // If parsing fails, create a structured response manually
-      recipes = [{
-        title: 'Error generating recipes',
-        description: 'We encountered an issue generating recipes. Please try again later.',
-        preparationTime: 'N/A',
-        complexity: 'N/A',
-        ingredients: ['Could not generate recipe'],
-        instructions: ['Could not generate instructions'],
-        image: 'https://via.placeholder.com/400x300?text=Recipe+Unavailable'
-      }];
+      recipes = [
+        {
+          title: 'Error generating recipes',
+          description:
+            'We encountered an issue generating recipes. Please try again later.',
+          preparationTime: 'N/A',
+          complexity: 'N/A',
+          ingredients: ['Could not generate recipe'],
+          instructions: ['Could not generate instructions'],
+          image: 'https://via.placeholder.com/400x300?text=Recipe+Unavailable',
+        },
+      ];
     }
 
     // Return the recipes
@@ -128,11 +129,11 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    
+
     console.error('Error in recipe recommendation API:', error);
     return NextResponse.json(
       { error: 'Failed to generate recipe recommendations' },
       { status: 500 }
     );
   }
-} 
+}

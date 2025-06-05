@@ -9,7 +9,6 @@ import { LOGIN_REDIRECT_URL } from '@/lib/constants';
 import { getDb } from '@/db';
 import { Photo } from '@/db/types';
 
-
 // Define proper return types for API functions
 type UploadUrlSuccessResponse = {
   success: true;
@@ -136,7 +135,6 @@ export async function savePhotoRecord(
   if (!userId) {
     redirect(LOGIN_REDIRECT_URL);
   }
-
 
   const db = await getDb();
 
